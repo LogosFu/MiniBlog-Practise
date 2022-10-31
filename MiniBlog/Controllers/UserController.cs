@@ -9,14 +9,14 @@ namespace MiniBlog.Controllers
     public class UserController : ControllerBase
     {
         [HttpPost]
-        public User Register(User user)
+        public ActionResult<User> Register(User user)
         {
             if (!UserStoreWillReplaceInFuture.instance.Users.Exists(_ => user.Name.ToLower() == _.Name.ToLower()))
             {
                 UserStoreWillReplaceInFuture.instance.Users.Add(user);
             }
 
-            return user;
+            return Created("/user", user);
         }
 
         [HttpGet]

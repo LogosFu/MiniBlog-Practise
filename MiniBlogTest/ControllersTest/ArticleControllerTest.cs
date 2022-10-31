@@ -80,8 +80,8 @@
 
         private static HttpClient GetClient()
         {
-            var application = new WebApplicationFactory<Program>();
-            return application.CreateClient();
+            var factory = new WebApplicationFactory<Program>();
+            return factory.CreateClient();
         }
     }
 }

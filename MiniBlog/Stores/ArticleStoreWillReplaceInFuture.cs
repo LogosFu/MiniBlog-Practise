@@ -1,9 +1,7 @@
-using System;
-using System.Collections.Generic;
-using MiniBlog.Model;
-
 namespace MiniBlog.Stores
 {
+    using MiniBlog.Model;
+
     public class ArticleStoreWillReplaceInFuture
     {
         private ArticleStoreWillReplaceInFuture()
@@ -13,7 +11,7 @@ namespace MiniBlog.Stores
 
         public static readonly ArticleStoreWillReplaceInFuture instance = new();
 
-        public List<Article> Articles { get;  set; }
+        public List<Article> Articles { get; set; }
 
         public void Init()
         {

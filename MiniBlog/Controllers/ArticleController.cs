@@ -1,5 +1,7 @@
 ﻿namespace MiniBlog.Controllers
 {
+    using System;
+    using System.Collections.Generic;
     using Microsoft.AspNetCore.Mvc;
     using MiniBlog.Model;
     using MiniBlog.Stores;
@@ -8,7 +10,6 @@
     [Route("[controller]")]
     public class ArticleController : ControllerBase
     {
-
         [HttpGet]
         public List<Article> List()
         {
@@ -16,7 +17,7 @@
         }
 
         [HttpPost]
-        public Article Create(Article article)
+        public ActionResult<Article> Create(Article article)
         {
             if (article.UserName != null)
             {
@@ -28,13 +29,14 @@
                 ArticleStoreWillReplaceInFuture.instance.Articles.Add(article);
             }
 
-            return article;
+            return Created("/article", article);
         }
 
         [HttpGet("{id}")]
         public Article GetById(Guid id)
         {
-            var foundArticle = ArticleStoreWillReplaceInFuture.instance.Articles.FirstOrDefault(article => article.Id == id);
+            var foundArticle =
+                ArticleStoreWillReplaceInFuture.instance.Articles.FirstOrDefault(article => article.Id == id);
             return foundArticle;
         }
     }
