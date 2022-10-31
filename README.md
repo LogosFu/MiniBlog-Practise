@@ -27,12 +27,12 @@ var app = builder.Build();
  
 In Test:
 ```C#
-  var client = _factory.WithWebHostBuilder(builder =>
+    private HttpClient GetClient()
         {
-            builder.ConfigureTestServices(services =>
+            var factory = new WebApplicationFactory<Program>();
+            return factory.WithWebHostBuilder(builder =>
             {
-                services.AddScoped<IQuoteService, TestQuoteService>();
-            });
-        })
-        .CreateClient();
+                builder.ConfigureServices(services => { services.AddScoped(service => _articleMocker.Object); });
+            }).CreateClient();
+        }
 ```
