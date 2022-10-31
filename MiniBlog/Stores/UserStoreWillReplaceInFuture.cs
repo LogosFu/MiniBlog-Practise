@@ -4,6 +4,8 @@ namespace MiniBlog.Stores
 
     public class UserStoreWillReplaceInFuture
     {
+        private List<User> users;
+
         private UserStoreWillReplaceInFuture()
         {
             Init();
@@ -11,11 +13,27 @@ namespace MiniBlog.Stores
 
         public static readonly UserStoreWillReplaceInFuture instance = new();
 
-        public List<User> Users { get; private set; }
+
+
+        public List<User> GetAll()
+        {
+            return this.users;
+        }
+
+        public User Save(User user)
+        {
+            this.users.Add(user);
+            return user;
+        }
+
+        public bool Delete(User user)
+        {
+            return this.users.Remove(user);
+        }
 
         public void Init()
         {
-            Users = new List<User>();
+            users = new List<User>();
         }
     }
 }

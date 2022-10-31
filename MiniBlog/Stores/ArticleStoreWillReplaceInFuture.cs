@@ -4,6 +4,8 @@ namespace MiniBlog.Stores
 
     public class ArticleStoreWillReplaceInFuture
     {
+        private List<Article> articles;
+
         private ArticleStoreWillReplaceInFuture()
         {
             this.Init();
@@ -11,13 +13,27 @@ namespace MiniBlog.Stores
 
         public static readonly ArticleStoreWillReplaceInFuture instance = new();
 
-        public List<Article> Articles { get; set; }
+        public Article Save(Article article)
+        {
+            this.articles.Add(article);
+            return article;
+        }
+
+        public List<Article> GetAll()
+        {
+            return this.articles;
+        }
+
+        public bool Delete(Article articles)
+        {
+            return this.articles.Remove(articles);
+        }
 
         public void Init()
         {
-            Articles = new List<Article>();
-            Articles.Add(new Article(null, "Happy new year", "Happy 2021 new year"));
-            Articles.Add(new Article(null, "Happy Halloween", "Halloween is coming"));
+            articles = new List<Article>();
+            articles.Add(new Article(null, "Happy new year", "Happy 2021 new year"));
+            articles.Add(new Article(null, "Happy Halloween", "Halloween is coming"));
         }
     }
 }

@@ -13,7 +13,7 @@
         [HttpGet]
         public List<Article> List()
         {
-            return ArticleStoreWillReplaceInFuture.instance.Articles;
+            return ArticleStoreWillReplaceInFuture.instance.GetAll();
         }
 
         [HttpPost]
@@ -21,12 +21,12 @@
         {
             if (article.UserName != null)
             {
-                if (!UserStoreWillReplaceInFuture.instance.Users.Exists(_ => article.UserName == _.Name))
+                if (!UserStoreWillReplaceInFuture.instance.GetAll().Exists(_ => article.UserName == _.Name))
                 {
-                    UserStoreWillReplaceInFuture.instance.Users.Add(new User(article.UserName));
+                    UserStoreWillReplaceInFuture.instance.Save(new User(article.UserName));
                 }
 
-                ArticleStoreWillReplaceInFuture.instance.Articles.Add(article);
+                ArticleStoreWillReplaceInFuture.instance.Save(article);
             }
 
             return Created("/article", article);
@@ -36,7 +36,7 @@
         public Article GetById(Guid id)
         {
             var foundArticle =
-                ArticleStoreWillReplaceInFuture.instance.Articles.FirstOrDefault(article => article.Id == id);
+                ArticleStoreWillReplaceInFuture.instance.GetAll().FirstOrDefault(article => article.Id == id);
             return foundArticle;
         }
     }
