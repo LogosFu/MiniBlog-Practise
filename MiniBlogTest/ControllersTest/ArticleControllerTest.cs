@@ -6,22 +6,28 @@
     using Microsoft.AspNetCore.Mvc.Testing;
     using MiniBlog.Model;
     using MiniBlog.Stores;
+    using Moq;
     using Newtonsoft.Json;
     using Xunit;
 
     [Collection("IntegrationTest")]
     public class ArticleControllerTest
     {
+        private Mock<IArticleStore> articleMocker = new Mock<IArticleStore>();
+        private IArticleStore articleStoreContext = new ArticleStoreContext();
+
         public ArticleControllerTest()
         {
             UserStoreWillReplaceInFuture.Instance.Init();
             ArticleStoreWillReplaceInFuture.Instance.Init();
+            articleStoreContext.Save(new Article(null, "Happy new year", "Happy 2021 new year"));
+            articleStoreContext.Save(new Article(null, "Happy Halloween", "Halloween is coming"));
         }
 
         [Fact]
         public async void Should_get_all_Article()
         {
-            var client = GetClient();
+            var client = this.GetClientWithStoreContext();
             var response = await client.GetAsync("/article");
             response.EnsureSuccessStatusCode();
             var body = await response.Content.ReadAsStringAsync();
@@ -32,6 +38,8 @@
         [Fact]
         public async void Should_create_article_fail_when_ArticleStore_unavailable()
         {
+            articleMocker.Setup(articleStoreContext => articleStoreContext.Save(It.IsAny<Article>()))
+                .Throws<Exception>();
             var client = GetClient();
             string userNameWhoWillAdd = "Tom";
             string articleContent = "What a good day today!";
@@ -47,13 +55,11 @@
         [Fact]
         public async void Should_create_article_and_register_user_correct()
         {
-            GetClient();
-            var client = GetClient();
+            var client = this.GetClientWithStoreContext();
             string userNameWhoWillAdd = "Tom";
             string articleContent = "What a good day today!";
             string articleTitle = "Good day";
             Article article = new Article(userNameWhoWillAdd, articleTitle, articleContent);
-
             var httpContent = JsonConvert.SerializeObject(article);
             StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
             var createArticleResponse = await client.PostAsync("/article", content);
@@ -78,10 +84,27 @@
             Assert.Equal("anonymous@unknow.com", users[0].Email);
         }
 
-        private static HttpClient GetClient()
+        private HttpClient GetClient()
         {
             var factory = new WebApplicationFactory<Program>();
-            return factory.CreateClient();
+            return factory.WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureServices(
+                    services => { services.AddScoped(service => this.articleMocker.Object); });
+            }).CreateClient();
+        }
+
+        private HttpClient GetClientWithStoreContext()
+        {
+            var factory = new WebApplicationFactory<Program>();
+            var client = factory.WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureServices(services =>
+                {
+                    services.AddSingleton(service => this.articleStoreContext);
+                });
+            }).CreateClient();
+            return client;
         }
     }
 }

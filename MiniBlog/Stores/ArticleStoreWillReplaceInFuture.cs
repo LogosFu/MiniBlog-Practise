@@ -2,7 +2,7 @@ namespace MiniBlog.Stores
 {
     using MiniBlog.Model;
 
-    public class ArticleStoreWillReplaceInFuture
+    public class ArticleStoreWillReplaceInFuture : IArticleStore
     {
         private List<Article> articles;
 
@@ -11,7 +11,7 @@ namespace MiniBlog.Stores
             this.Init();
         }
 
-        public static readonly ArticleStoreWillReplaceInFuture Instance = new ArticleStoreWillReplaceInFuture();
+        public static readonly ArticleStoreWillReplaceInFuture Instance = new ();
 
         public Article Save(Article article)
         {
@@ -37,6 +37,11 @@ namespace MiniBlog.Stores
             articles = new List<Article>();
             articles.Add(new Article(null, "Happy new year", "Happy 2021 new year"));
             articles.Add(new Article(null, "Happy Halloween", "Halloween is coming"));
+        }
+
+        public void DeleteAll()
+        {
+            articles = new List<Article>();
         }
     }
 }
