@@ -14,8 +14,8 @@
     {
         public ArticleControllerTest()
         {
-            UserStoreWillReplaceInFuture.instance.Init();
-            ArticleStoreWillReplaceInFuture.instance.Init();
+            UserStoreWillReplaceInFuture.Instance.Init();
+            ArticleStoreWillReplaceInFuture.Instance.Init();
         }
 
         [Fact]

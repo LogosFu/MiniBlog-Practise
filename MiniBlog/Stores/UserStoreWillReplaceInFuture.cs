@@ -6,14 +6,12 @@ namespace MiniBlog.Stores
     {
         private List<User> users;
 
+        public static readonly UserStoreWillReplaceInFuture Instance = new UserStoreWillReplaceInFuture();
+
         private UserStoreWillReplaceInFuture()
         {
             Init();
         }
-
-        public static readonly UserStoreWillReplaceInFuture instance = new();
-
-
 
         public List<User> GetAll()
         {

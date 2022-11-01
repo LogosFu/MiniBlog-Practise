@@ -11,7 +11,7 @@ namespace MiniBlog.Stores
             this.Init();
         }
 
-        public static readonly ArticleStoreWillReplaceInFuture instance = new();
+        public static readonly ArticleStoreWillReplaceInFuture Instance = new ArticleStoreWillReplaceInFuture();
 
         public Article Save(Article article)
         {
