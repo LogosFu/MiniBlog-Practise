@@ -12,7 +12,9 @@ builder.Services.AddSwaggerGen();
 // builder.Services.AddScoped<IArticleStore, ArticleStoreContext>();
 builder.Services.AddSingleton<IArticleStore, ArticleStoreContext>();
 builder.Services.AddSingleton<IUserStore, UserStoreContext>();
-builder.Services.AddSingleton<IArticleService, ArticleService>();
+builder.Services.AddScoped<ArticleService>();
+builder.Services.AddScoped<UserService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

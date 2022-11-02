@@ -3,7 +3,7 @@ namespace MiniBlog.Service;
 using Model;
 using Stores;
 
-public class ArticleService : IArticleService
+public class ArticleService 
 {
     private IArticleStore articleStore;
     private IUserStore userStore;
