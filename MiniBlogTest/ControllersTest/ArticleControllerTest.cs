@@ -5,6 +5,7 @@
     using System.Text;
     using Microsoft.AspNetCore.Mvc.Testing;
     using MiniBlog.Model;
+    using MiniBlog.Service;
     using MiniBlog.Stores;
     using Moq;
     using Newtonsoft.Json;
@@ -13,15 +14,16 @@
     [Collection("IntegrationTest")]
     public class ArticleControllerTest
     {
-        private Mock<IArticleStore> articleMocker = new Mock<IArticleStore>();
-        private IArticleStore articleStoreContext = new ArticleStoreContext();
+        private Mock<IArticleService> articleMocker = new Mock<IArticleService>();
+        private IArticleStore articleStore = new ArticleStoreContext();
+        private IUserStore userStore = new UserStoreContext();
 
         public ArticleControllerTest()
         {
             UserStoreWillReplaceInFuture.Instance.Init();
             ArticleStoreWillReplaceInFuture.Instance.Init();
-            articleStoreContext.Save(new Article(null, "Happy new year", "Happy 2021 new year"));
-            articleStoreContext.Save(new Article(null, "Happy Halloween", "Halloween is coming"));
+            articleStore.Save(new Article(null, "Happy new year", "Happy 2021 new year"));
+            articleStore.Save(new Article(null, "Happy Halloween", "Halloween is coming"));
         }
 
         [Fact]
@@ -38,7 +40,7 @@
         [Fact]
         public async void Should_create_article_fail_when_ArticleStore_unavailable()
         {
-            articleMocker.Setup(articleStoreContext => articleStoreContext.Save(It.IsAny<Article>()))
+            articleMocker.Setup(articleStoreContext => articleStoreContext.Create(It.IsAny<Article>()))
                 .Throws<Exception>();
             var client = GetClient();
             string userNameWhoWillAdd = "Tom";
@@ -101,7 +103,8 @@
             {
                 builder.ConfigureServices(services =>
                 {
-                    services.AddSingleton(service => this.articleStoreContext);
+                    services.AddSingleton(service => this.articleStore);
+                    services.AddSingleton(service => this.userStore);
                 });
             }).CreateClient();
             return client;

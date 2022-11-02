@@ -6,6 +6,7 @@ namespace MiniBlogTest.ControllerTest
     using Microsoft.AspNetCore.Mvc.Testing;
     using MiniBlog.Model;
     using MiniBlog.Stores;
+    using Moq;
     using Newtonsoft.Json;
     using Xunit;
 
@@ -13,6 +14,7 @@ namespace MiniBlogTest.ControllerTest
     public class UserControllerTest
     {
         private IArticleStore articleStore = new ArticleStoreContext();
+        private IUserStore userStore = new UserStoreContext();
 
         public UserControllerTest()
         {
@@ -22,7 +24,12 @@ namespace MiniBlogTest.ControllerTest
         [Fact]
         public async Task Should_get_all_users()
         {
-            var client = GetClient();
+            var factory = new WebApplicationFactory<Program>();
+            var client = factory.WithWebHostBuilder(buiilder =>
+            {
+                buiilder.ConfigureServices(services => services.AddSingleton(service => this.articleStore));
+                buiilder.ConfigureServices(services => services.AddSingleton(service => this.userStore));
+            }).CreateClient();
             var response = await client.GetAsync("/user");
             response.EnsureSuccessStatusCode();
             var body = await response.Content.ReadAsStringAsync();
@@ -33,7 +40,12 @@ namespace MiniBlogTest.ControllerTest
         [Fact]
         public async Task Should_register_user_success()
         {
-            var client = GetClient();
+            var factory = new WebApplicationFactory<Program>();
+            var client = factory.WithWebHostBuilder(buiilder =>
+            {
+                buiilder.ConfigureServices(services => services.AddSingleton(service => this.articleStore));
+                buiilder.ConfigureServices(services => services.AddSingleton(service => this.userStore));
+            }).CreateClient();
 
             var userName = "Tom";
             var email = "a@b.com";
@@ -51,10 +63,17 @@ namespace MiniBlogTest.ControllerTest
             Assert.Equal(userName, users[0].Name);
         }
 
-        [Fact(Skip = "todo : fix late")]
+        [Fact]
         public async Task Should_register_user_fail_when_UserStore_unavailable()
         {
-            var client = GetClient();
+            var userStoreMocker = new Mock<IUserStore>();
+            userStoreMocker.Setup(userStore => userStore.Save(It.IsAny<User>())).Throws<Exception>();
+            var factory = new WebApplicationFactory<Program>();
+            var client = factory.WithWebHostBuilder(buiilder =>
+            {
+                buiilder.ConfigureServices(services => services.AddSingleton(service => this.articleStore));
+                buiilder.ConfigureServices(services => services.AddSingleton(service => userStoreMocker.Object));
+            }).CreateClient();
 
             var userName = "Tom";
             var email = "a@b.com";
@@ -69,7 +88,12 @@ namespace MiniBlogTest.ControllerTest
         [Fact]
         public async Task Should_update_user_email_success_()
         {
-            var client = GetClient();
+            var factory = new WebApplicationFactory<Program>();
+            var client = factory.WithWebHostBuilder(buiilder =>
+            {
+                buiilder.ConfigureServices(services => services.AddSingleton(service => this.articleStore));
+                buiilder.ConfigureServices(services => services.AddSingleton(service => this.userStore));
+            }).CreateClient();
 
             var userName = "Tom";
             var originalEmail = "a@b.com";
@@ -94,7 +118,12 @@ namespace MiniBlogTest.ControllerTest
         [Fact]
         public async Task Should_delete_user_and_related_article_success()
         {
-            var client = GetClient();
+            var factory = new WebApplicationFactory<Program>();
+            var client = factory.WithWebHostBuilder(buiilder =>
+            {
+                buiilder.ConfigureServices(services => services.AddSingleton(service => this.articleStore));
+                buiilder.ConfigureServices(services => services.AddSingleton(service => this.userStore));
+            }).CreateClient();
 
             var userName = "Tom";
 
@@ -137,15 +166,6 @@ namespace MiniBlogTest.ControllerTest
             StringContent registerUserContent = new StringContent(JsonConvert.SerializeObject(article1), Encoding.UTF8,
                 MediaTypeNames.Application.Json);
             await client.PostAsync("/article", registerUserContent);
-        }
-
-        private HttpClient GetClient()
-        {
-            var factory = new WebApplicationFactory<Program>();
-            return factory.WithWebHostBuilder(buiilder =>
-            {
-                buiilder.ConfigureServices(services => services.AddSingleton(service => this.articleStore));
-            }).CreateClient();
         }
     }
 }

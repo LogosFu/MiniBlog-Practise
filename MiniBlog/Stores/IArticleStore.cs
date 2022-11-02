@@ -9,8 +9,4 @@ public interface IArticleStore
     List<Article> GetAll();
 
     bool Delete(Article articles);
-
-    void Init();
-
-    void DeleteAll();
 }

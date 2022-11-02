@@ -1,3 +1,4 @@
+using MiniBlog.Service;
 using MiniBlog.Stores;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,7 +11,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 // builder.Services.AddScoped<IArticleStore, ArticleStoreContext>();
 builder.Services.AddSingleton<IArticleStore, ArticleStoreContext>();
-
+builder.Services.AddSingleton<IUserStore, UserStoreContext>();
+builder.Services.AddSingleton<IArticleService, ArticleService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

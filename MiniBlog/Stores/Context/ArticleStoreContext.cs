@@ -21,14 +21,4 @@ public class ArticleStoreContext : IArticleStore
     {
         return articles.Remove(article);
     }
-
-    public void Init()
-    {
-        throw new NotImplementedException();
-    }
-
-    public void DeleteAll()
-    {
-        articles = new List<Article>();
-    }
 }
